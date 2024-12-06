@@ -21,7 +21,7 @@ class Videos:
         self.video_length = video_length
         self.device = device
 
-        num_max_inst = 50
+        num_max_inst = 50  # max number of unique(?) instances that can be detected in the video
         self.match_threshold = 0.05
 
         self.num_inst = 0
