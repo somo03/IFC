@@ -190,43 +190,56 @@ class Ifc(nn.Module):
             # TODO provide sequential runner for long videos.
             # NOTE we assume that only a single video is taken as an input.
             video = self.preprocess_image(batched_inputs)
-
             backbone_tensor, backbone_pos = self.detr.forward_pre_backbone(video)
 
             video_length = len(video)
             image_size = video.tensor.shape[-2:]
             interim_size = (math.ceil(image_size[0] / 8), math.ceil(image_size[1] / 8))
 
+            print(f"    [->] video_length is {video_length}")
+            print(f"    [->] num_frames is {self.num_frames}")
+
+            # Create Videos instance with proper size
             video_output = Videos(
-                self.num_frames, video_length, self.num_classes, interim_size, self.merge_device
+                self.num_frames,
+                video_length,
+                self.num_classes,
+                interim_size,
+                self.merge_device
             )
 
-            is_last_clip = False
+            # Process video in clips
             for start_idx in range(0, video_length, self.clip_stride):
-                end_idx = start_idx + self.num_frames
-                if end_idx >= video_length:
-                    is_last_clip = True
-                    start_idx, end_idx = max(0, video_length - self.num_frames), video_length
-
+                print(f"    [->] start_idx is {start_idx}")
+                end_idx = min(start_idx + self.num_frames, video_length)
                 frame_idx = list(range(start_idx, end_idx))
+
+                # Handle last clip
+                if end_idx - start_idx < self.num_frames:
+                    start_idx = max(0, video_length - self.num_frames)
+                    frame_idx = list(range(start_idx, video_length))
 
                 clip_backbone_tensor = [t[frame_idx] for t in backbone_tensor]
                 clip_backbone_pos = [p[frame_idx] for p in backbone_pos]
 
-                output = self.detr.forward_post_backbone(clip_backbone_tensor, clip_backbone_pos, is_train=False)
+                output = self.detr.forward_post_backbone(
+                    clip_backbone_tensor,
+                    clip_backbone_pos,
+                    is_train=False
+                )
 
                 _clip_results = self.inference_clip(output, image_size)
                 clip_results = Clips(frame_idx, _clip_results.to(self.merge_device))
 
                 video_output.update(clip_results)
 
-                if is_last_clip:
+                if end_idx >= video_length:
                     break
-
+                
             height = batched_inputs[0].get("height", image_size[0])
             width = batched_inputs[0].get("width", image_size[1])
 
-            pred_cls, pred_masks = video_output.get_result((height, width)) # NxHxW / NxC
+            pred_cls, pred_masks = video_output.get_result((height, width))
 
             return self.inference_video(pred_cls, pred_masks, (height, width))
 

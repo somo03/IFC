@@ -29,8 +29,8 @@ class VisualizationDemo(object):
         )
         self.cpu_device = torch.device("cpu")
         self.instance_mode = instance_mode
-
         self.parallel = parallel
+        print(f"    [->] parallel is {parallel}")
         if parallel:
             num_gpu = torch.cuda.device_count()
             self.predictor = AsyncPredictor(cfg, num_gpus=num_gpu)
@@ -119,6 +119,7 @@ class VideoPredictor(DefaultPredictor):
                 input_frames.append(image)
 
             inputs = {"image": input_frames, "height": height, "width": width}
+            print("    [->] is about to make forward pass to model")
             predictions = self.model([inputs])
             return predictions
 

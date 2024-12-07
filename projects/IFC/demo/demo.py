@@ -93,6 +93,7 @@ if __name__ == "__main__":
                 vid_frames.append(img)
 
             start_time = time.time()
+            print("    [->] going to call run_on_video")
             predictions, visualized_output = demo.run_on_video(vid_frames)
             logger.info(
                 "{}: detected {} instances per frame in {:.2f}s".format(
