@@ -197,6 +197,7 @@ class Ifc(nn.Module):
             interim_size = (math.ceil(image_size[0] / 8), math.ceil(image_size[1] / 8))
 
             print(f"    [->] video_length is {video_length}")
+            
             print(f"    [->] num_frames is {self.num_frames}")
 
             # Create Videos instance with proper size
