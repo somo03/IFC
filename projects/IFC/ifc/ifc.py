@@ -68,6 +68,7 @@ class Ifc(nn.Module):
 
         self.device = torch.device(cfg.MODEL.DEVICE)
         self.clip_stride = cfg.MODEL.IFC.CLIP_STRIDE
+        self.window_size = cfg.MODEL.IFC.WINDOW_SIZE
         self.merge_on_cpu = cfg.MODEL.IFC.MERGE_ON_CPU
         self.is_multi_cls = cfg.MODEL.IFC.MULTI_CLS_ON
         self.apply_cls_thres = cfg.MODEL.IFC.APPLY_CLS_THRES
@@ -205,6 +206,7 @@ class Ifc(nn.Module):
                 video_length,
                 self.num_classes,
                 interim_size,
+                self.window_size,
                 self.merge_device
             )
 

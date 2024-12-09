@@ -37,6 +37,7 @@ def add_ifc_config(cfg):
 
     # Evaluation
     cfg.MODEL.IFC.CLIP_STRIDE = 1
+    cfg.MODEL.IFC.WINDOW_SIZE = 3
     cfg.MODEL.IFC.MERGE_ON_CPU = False
     cfg.MODEL.IFC.MULTI_CLS_ON = True
     cfg.MODEL.IFC.APPLY_CLS_THRES = 0.01

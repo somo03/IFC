@@ -19,20 +19,22 @@ class Videos:
     Memory-efficient structure to support clip-level instance tracking using sliding window
     approach for long videos.
     """
-    def __init__(self, video_length, num_classes, image_size, device):
+    def __init__(self, video_length, num_classes, image_size, window_size, device):
         self.video_length = video_length
         self.device = device
         
         # Parameters for instance tracking
         self.num_max_inst = 50  # max number of instances
         self.match_threshold = 0.05
-        self.window_size = 3  # number of clips to keep in memory
+        
         
         self.num_inst = 0
         self.num_clip = 0
         self.saved_idx_set = set()
         
         # Initialize storage for sliding window
+        self.window_size = window_size  # number of clips to keep in memory
+        print(f"    [->] windows_size is {window_size}")
         self.saved_logits = torch.zeros(
             (self.window_size, self.num_max_inst, self.video_length, *image_size), 
             dtype=torch.float, 
