@@ -202,7 +202,6 @@ class Ifc(nn.Module):
 
             # Create Videos instance with proper size
             video_output = Videos(
-                self.num_frames,
                 video_length,
                 self.num_classes,
                 interim_size,

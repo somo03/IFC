@@ -19,8 +19,7 @@ class Videos:
     Memory-efficient structure to support clip-level instance tracking using sliding window
     approach for long videos.
     """
-    def __init__(self, num_frames, video_length, num_classes, image_size, device):
-        self.num_frames = num_frames
+    def __init__(self, video_length, num_classes, image_size, device):
         self.video_length = video_length
         self.device = device
         
