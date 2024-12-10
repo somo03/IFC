@@ -147,6 +147,7 @@ class Videos:
                     continue
 
                 # Ensure we don't write beyond video length
+                # do we really need this line?
                 frame_indices = [idx for idx in input_clip.frame_idx if idx < self.video_length]
 
                 self.saved_logits[window_idx, r, frame_indices] = input_clip.mask_logits[c, :len(frame_indices)]
@@ -167,6 +168,7 @@ class Videos:
                 left_slice = slice(0, new_inst_end - self.num_inst)
 
                 # Ensure we don't write beyond video length
+                # do we really need this line?
                 frame_indices = [idx for idx in input_clip.frame_idx if idx < self.video_length]
 
                 self.saved_logits[window_idx, slice_idx, frame_indices] = input_clip.mask_logits[left_idx[left_slice], :len(frame_indices)]
@@ -212,7 +214,7 @@ class Videos:
 
 
 class Clips:
-    def __init__(self, frame_idx: List[int], results: List[Instances]):
+    def __init__(self, frame_idx: List[int], results: Instances):
         self.frame_idx = frame_idx
         self.frame_set = set(frame_idx)
 
