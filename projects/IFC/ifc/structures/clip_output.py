@@ -146,13 +146,9 @@ class Videos:
                 if not is_above:
                     continue
 
-                # Ensure we don't write beyond video length
-                # do we really need this line?
-                frame_indices = [idx for idx in input_clip.frame_idx if idx < self.video_length]
-
-                self.saved_logits[window_idx, r, frame_indices] = input_clip.mask_logits[c, :len(frame_indices)]
-                self.saved_masks[window_idx, r, frame_indices] = input_clip.mask_probs[c, :len(frame_indices)]
-                self.saved_valid[window_idx, r, frame_indices] = True
+                self.saved_logits[window_idx, r, input_clip.frame_idx] = input_clip.mask_logits[c, :len(input_clip.frame_idx)]
+                self.saved_masks[window_idx, r, input_clip.frame_idx] = input_clip.mask_probs[c, :len(input_clip.frame_idx)]
+                self.saved_valid[window_idx, r, input_clip.frame_idx] = True
                 self.saved_cls[window_idx, r] = input_clip.cls_probs[c]
                 existed_idx.append(c)
 
@@ -167,19 +163,15 @@ class Videos:
                 slice_idx = slice(self.num_inst, new_inst_end)
                 left_slice = slice(0, new_inst_end - self.num_inst)
 
-                # Ensure we don't write beyond video length
-                # do we really need this line?
-                frame_indices = [idx for idx in input_clip.frame_idx if idx < self.video_length]
-
-                self.saved_logits[window_idx, slice_idx, frame_indices] = input_clip.mask_logits[left_idx[left_slice], :len(frame_indices)]
-                self.saved_masks[window_idx, slice_idx, frame_indices] = input_clip.mask_probs[left_idx[left_slice], :len(frame_indices)]
-                self.saved_valid[window_idx, slice_idx, frame_indices] = True
+                self.saved_logits[window_idx, slice_idx, input_clip.frame_idx] = input_clip.mask_logits[left_idx[left_slice], :len(input_clip.frame_idx)]
+                self.saved_masks[window_idx, slice_idx, input_clip.frame_idx] = input_clip.mask_probs[left_idx[left_slice], :len(input_clip.frame_idx)]
+                self.saved_valid[window_idx, slice_idx, input_clip.frame_idx] = True
                 self.saved_cls[window_idx, slice_idx] = input_clip.cls_probs[left_idx[left_slice]]
                 self.num_inst = new_inst_end
 
         # Update accumulation and status
         self._update_accumulation()
-        self.saved_idx_set.update(set(frame_indices))  # Only add valid frame indices
+        self.saved_idx_set.update(set(input_clip.frame_idx))  # Only add valid frame indices
         self.num_clip += 1
 
 
@@ -196,6 +188,7 @@ class Videos:
             valid_instances = valid_mask.any(dim=1)
             self.accumulated_cls[:self.num_inst][valid_instances] += self.saved_cls[i, :self.num_inst][valid_instances]
         
+        print("    [->] Going to average acc results")
         # Average accumulated results
         valid_count = torch.clamp(self.accumulation_count[:self.num_inst], min=1.0)
         final_logits = self.accumulated_logits[:self.num_inst] / valid_count.unsqueeze(-1).unsqueeze(-1)
@@ -209,6 +202,22 @@ class Videos:
         valid_instances = (valid_count[:, :self.video_length].sum(dim=1) > 0)
         out_cls = self.accumulated_cls[:self.num_inst] / torch.clamp(valid_count.sum(dim=1), min=1.0).unsqueeze(-1)
         out_masks = retry_if_cuda_oom(lambda x: x > 0.0)(final_logits)
+        
+        print("    [->] Going to return")
+        print(f"    [->] out_cls device: {out_cls.device}")
+        print(f"    [->] out_masks device: {out_masks.device}")
+        print(f"    [->] valid_instances device: {valid_instances.device}")
+
+        # Check if any tensor is on CPU
+        is_any_cpu = (out_cls.device.type == 'cpu' or 
+                     out_masks.device.type == 'cpu' or 
+                     valid_instances.device.type == 'cpu')
+    
+        # Move all to CPU if any is on CPU
+        if is_any_cpu:
+            out_cls = out_cls.cpu()
+            out_masks = out_masks.cpu()
+            valid_instances = valid_instances.cpu()
         
         return out_cls[valid_instances], out_masks[valid_instances]
 
