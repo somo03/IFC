@@ -51,11 +51,13 @@ def get_parser():
     parser.add_argument(
         "--save-frames",
         default=False,
+        action="store_true",
         help="Save frame level image outputs.",
     )
     parser.add_argument(
         "--save-predictions",
         default=False,
+        action="store_true",
         help="Save predictions in json file per frame.",
     )
     parser.add_argument(
