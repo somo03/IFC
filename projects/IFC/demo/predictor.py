@@ -45,6 +45,7 @@ class VisualizationDemo(object):
         Returns:
             predictions (dict): the output of the model.
             vis_output (VisImage): the visualized image output.
+            # TODO: update return
         """
         vis_output = None
         predictions = self.predictor(frames)
@@ -56,6 +57,7 @@ class VisualizationDemo(object):
 
         frame_masks = list(zip(*pred_masks))
         total_vis_output = []
+        total_text_output = []
         for frame_idx in range(len(frames)):
             frame = frames[frame_idx][:, :, ::-1]
             visualizer = TrackVisualizer(frame, self.metadata, instance_mode=self.instance_mode)
@@ -68,7 +70,10 @@ class VisualizationDemo(object):
             vis_output = visualizer.draw_instance_predictions(predictions=ins)
             total_vis_output.append(vis_output)
 
-        return predictions, total_vis_output
+            text_output = visualizer.get_instance_predictions_dict(predictions=ins)
+            total_text_output.append(text_output)
+
+        return predictions, total_vis_output, total_text_output
 
 
 class VideoPredictor(DefaultPredictor):
