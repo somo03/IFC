@@ -14,6 +14,42 @@ from detectron2.structures import Instances
 from detectron2.utils.video_visualizer import VideoVisualizer
 from detectron2.utils.visualizer import ColorMode
 
+def get_list_shape(lst):
+    """
+    Get shape and maximum depth of a list
+    Returns tuple: (shape, max_depth)
+    """
+    # Base case: not a list
+    if not isinstance(lst, list):
+        return (), 0
+    
+    # Empty list case
+    if not lst:
+        return (0,), 1
+        
+    # Get shapes of all sublists
+    shapes = [get_list_shape(item) for item in lst]
+    sub_shapes, sub_depths = zip(*shapes)
+    
+    # Calculate current shape and depth
+    shape = (len(lst),) + sub_shapes[0] if all(s == sub_shapes[0] for s in sub_shapes) else (len(lst),)
+    depth = max(sub_depths) + 1
+    
+    return shape, depth
+
+def print_list_info(lst):
+    shape, depth = get_list_shape(lst)
+    print(f"\nList: {lst}")
+    print(f"Shape: {shape}")
+    print(f"Max depth: {depth}")
+    
+    # Alternative simple way to get just length
+    print(f"Simple len(): {len(lst)}")
+    
+    # Examine first level of nesting using type checking
+    types = [type(x).__name__ for x in lst]
+    print(f"Types at first level: {types}")
+
 
 class VisualizationDemo(object):
     def __init__(self, cfg, instance_mode=ColorMode.IMAGE, parallel=False):
