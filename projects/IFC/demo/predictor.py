@@ -7,6 +7,7 @@ import cv2
 import torch
 
 from visualizer import TrackVisualizer
+from video_prediction_storage import compress_video_predictions, CompressedVideoData
 
 from detectron2.data import MetadataCatalog
 from detectron2.engine.defaults import DefaultPredictor
@@ -80,7 +81,8 @@ class VisualizationDemo(object):
                 This is the format used by OpenCV.
         Returns:
             predictions (dict): the output of the model.
-            vis_output (VisImage): the visualized image output.
+            total_vis_output (VisImage): the visualized image output.
+            total_text_output: compressed predictions reade to be saved on disk.
             # TODO: update return
         """
         vis_output = None
@@ -93,7 +95,7 @@ class VisualizationDemo(object):
 
         frame_masks = list(zip(*pred_masks))
         total_vis_output = []
-        total_text_output = []
+
         for frame_idx in range(len(frames)):
             frame = frames[frame_idx][:, :, ::-1]
             visualizer = TrackVisualizer(frame, self.metadata, instance_mode=self.instance_mode)
@@ -105,9 +107,13 @@ class VisualizationDemo(object):
 
             vis_output = visualizer.draw_instance_predictions(predictions=ins)
             total_vis_output.append(vis_output)
-
-            text_output = visualizer.get_instance_predictions_dict(predictions=ins)
-            total_text_output.append(text_output)
+        
+        total_text_output = compress_video_predictions(
+            pred_masks,
+            pred_labels,
+            pred_scores,
+            self.metadata
+        )
 
         return predictions, total_vis_output, total_text_output
 

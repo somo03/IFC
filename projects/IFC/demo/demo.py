@@ -17,6 +17,7 @@ from detectron2.utils.file_io import PathManager
 
 from predictor import VisualizationDemo
 from projects.IFC.ifc import add_ifc_config
+from video_prediction_storage import save_compressed_data
 
 
 def setup_cfg(args):
@@ -104,7 +105,7 @@ if __name__ == "__main__":
 
             start_time = time.time()
             print("    [->] going to call run_on_video")
-            predictions, visualized_output, text_predictions = demo.run_on_video(vid_frames)
+            predictions, visualized_output, compressed_predictions = demo.run_on_video(vid_frames)
             logger.info(
                 "{}: detected {} instances per frame in {:.2f}s".format(
                     vid_path, len(predictions["pred_scores"]), time.time() - start_time
@@ -128,11 +129,8 @@ if __name__ == "__main__":
             out.release()
 
             if args.save_predictions:
-                pred_dir = Path(out_vid_path + "_predictions")
-                pred_dir.mkdir(exist_ok=True)
-
-                for frame_idx, frame_preds in enumerate(text_predictions):
-                    output_filename = os.path.join(pred_dir, f"frame_{frame_idx:04d}.json")
-                    print(f"    [->] Saving frame {frame_idx:04d} predictions to {output_filename}")
-                    with open(output_filename, 'w') as f:
-                        json.dump(frame_preds, f, indent=2)
+                save_compressed_data(
+                    args.output,
+                    vid_file,
+                    compressed_predictions                  
+                )
