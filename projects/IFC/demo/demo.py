@@ -50,6 +50,11 @@ def get_parser():
         help="Path to the checkpoint pth",
     )
     parser.add_argument(
+        "--black-out-all-except",
+        type=int,
+        help="If set, blacks out everything except the instance with this ID.",
+    )
+    parser.add_argument(
         "--save-frames",
         default=False,
         action="store_true",
@@ -105,7 +110,11 @@ if __name__ == "__main__":
 
             start_time = time.time()
             print("    [->] going to call run_on_video")
-            predictions, visualized_output, compressed_predictions = demo.run_on_video(vid_frames)
+
+           
+            predictions, visualized_output, compressed_predictions = demo.run_on_video(vid_frames, args.black_out_all_except)
+            
+
             logger.info(
                 "{}: detected {} instances per frame in {:.2f}s".format(
                     vid_path, len(predictions["pred_scores"]), time.time() - start_time

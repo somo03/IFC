@@ -74,7 +74,7 @@ class VisualizationDemo(object):
         else:
             self.predictor = VideoPredictor(cfg)
 
-    def run_on_video(self, frames):
+    def run_on_video(self, frames, black_out_id=None):
         """
         Args:
             frames (List[np.ndarray]): a list of images of shape (H, W, C) (in BGR order).
@@ -105,7 +105,12 @@ class VisualizationDemo(object):
                 ins.pred_classes = pred_labels
                 ins.pred_masks = torch.stack(frame_masks[frame_idx], dim=0)
 
-            vis_output = visualizer.draw_instance_predictions(predictions=ins)
+            if black_out_id is not None:
+                print(f"    [->] Before drawing visualizer output img is {visualizer.output.img.sum()}")
+                vis_output = visualizer.draw_instance_with_blackout(predictions=ins, target_id=black_out_id)
+            else:
+                vis_output = visualizer.draw_instance_predictions(predictions=ins)
+                
             total_vis_output.append(vis_output)
         
         total_text_output = compress_video_predictions(
