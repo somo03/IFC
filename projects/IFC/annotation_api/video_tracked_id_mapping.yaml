@@ -7,3 +7,11 @@ B08_R2_Boden_cut:
       clip_size: 10  # INPUT.SAMPLING_FRAME_NUM 
     detected_ids:
       - 1
+B15_R3_Matte_cut:
+  model:
+    name: "r101_max_inst_50"
+    config:
+      clip_size: 10 
+    detected_ids:
+      - 1
+      - 4
