@@ -114,7 +114,7 @@ def load_frame_prediction(
     Args:
         predictions_dir: Directory containing the HDF5 files
         video_id: Video identifier
-        frame_idx: Index of the frame to load
+        frame_idx: Index of the frame to load (starts from 0)
         
     Returns:
         Tuple of (frame_masks, class_ids, class_labels, confidence_scores)
@@ -123,7 +123,6 @@ def load_frame_prediction(
     h5_path = Path(predictions_dir) / f"{video_id}.h5"
     
     with h5py.File(h5_path, 'r') as f:
-        # Get dimensions from the first mask's shape
         first_mask = f['instance_masks/instance_0']
         shape = first_mask.attrs['shape']
         num_frames = shape[0]
