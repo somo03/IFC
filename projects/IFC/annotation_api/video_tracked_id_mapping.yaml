@@ -1,0 +1,9 @@
+# This YAML stores instance id of the person of interest
+# in a video detected by an instance segmentation model.
+B08_R2_Boden_cut:
+  model:
+    name: "r101_max_inst_50"
+    config:
+      clip_size: 10  # INPUT.SAMPLING_FRAME_NUM 
+    detected_ids:
+      - 1
