@@ -106,7 +106,6 @@ class VisualizationDemo(object):
                 ins.pred_masks = torch.stack(frame_masks[frame_idx], dim=0)
 
             if black_out_id is not None:
-                print(f"    [->] Before drawing visualizer output img is {visualizer.output.img.sum()}")
                 vis_output = visualizer.draw_instance_with_blackout(predictions=ins, target_id=black_out_id)
             else:
                 vis_output = visualizer.draw_instance_predictions(predictions=ins)

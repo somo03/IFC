@@ -156,8 +156,9 @@ def load_frame_prediction(
 # Example usage
 if __name__ == "__main__":
     predictions_dir = "/mnt/data/output_data/IFC/r101_max_inst_50"
-    frame_masks, ids, labels, scores = load_frame_prediction(predictions_dir, "B08_R2_Boden_detectron2_20_frames", 0)
-    
-    print("Class IDs:", ids)
-    print("Labels:", labels)
-    print("Scores:", scores)
+    mask_sum = 0
+    for i in range(20):
+        frame_masks, ids, labels, scores = load_frame_prediction(predictions_dir, "B08_R2_Boden_detectron2_20_frames", i)
+        mask_sum += frame_masks[0].sum()
+        
+    print("Mask sum instance 0: ", mask_sum)

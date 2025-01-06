@@ -212,7 +212,6 @@ class Ifc(nn.Module):
 
             # Process video in clips
             for start_idx in range(0, video_length, self.clip_stride):
-                print(f"    [->] start_idx is {start_idx}")
                 end_idx = min(start_idx + self.num_frames, video_length)
                 frame_idx = list(range(start_idx, end_idx))
 

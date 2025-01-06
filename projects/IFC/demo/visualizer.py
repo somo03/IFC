@@ -101,8 +101,6 @@ class TrackVisualizer(Visualizer):
                 everything else blacked out.
         """
         preds = predictions.to(self.cpu_device)
-
-        print(f"    [->] Len pred_masks is {len(preds.pred_masks)}")
         
         if not preds.has("pred_masks"):
             raise ValueError("Predictions must contain masks for blackout visualization")
@@ -114,7 +112,8 @@ class TrackVisualizer(Visualizer):
         
         self.draw_binary_mask(
             binary_mask=target_mask_inverse,
-            color=(0,0,0)
+            color=(0,0,0),
+            alpha=1
         )
 
         return self.output

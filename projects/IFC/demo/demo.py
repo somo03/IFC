@@ -114,6 +114,7 @@ if __name__ == "__main__":
            
             predictions, visualized_output, compressed_predictions = demo.run_on_video(vid_frames, args.black_out_all_except)
             
+            print(f"    [->] Mask sum instance 0: {predictions['pred_masks'][0].numpy().sum()}")
 
             logger.info(
                 "{}: detected {} instances per frame in {:.2f}s".format(
