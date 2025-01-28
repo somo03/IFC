@@ -1,0 +1,43 @@
+[tool.poetry]
+name = "ifc"
+version = "0.1.0"
+description = ""
+authors = ["somo03 <sofia.molotkova@dfki.de>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.13"
+numpy = "1.26.4"
+opencv-contrib-python = "4.11.0.86"
+opencv-python = "4.8.0.76"
+tqdm = "4.66.1"
+torch = "2.0.1"
+torchaudio = "2.0.2"
+torchvision = "0.15.2"
+nvidia-cublas-cu11 = "11.10.3.66"
+nvidia-cuda-cupti-cu11 = "11.7.101"
+nvidia-cuda-nvrtc-cu11 = "11.7.99"
+nvidia-cuda-runtime-cu11 = "11.7.99"
+nvidia-cudnn-cu11 = "8.5.0.96"
+nvidia-cufft-cu11 = "10.9.0.58"
+nvidia-curand-cu11 = "10.2.10.91"
+nvidia-cusolver-cu11 = "11.4.0.1"
+nvidia-cusparse-cu11 = "11.7.4.91"
+nvidia-nccl-cu11 = "2.14.3"
+nvidia-nvtx-cu11 = "11.7.91"
+h5py = "3.9.0"
+scipy = "1.11.2"
+pycocotools = "2.0.8"
+# detectron2 = {git = "https://github.com/somo03/IFC.git", branch = "master", develop = true}
+
+[build-system]
+
+requires = [
+    "poetry-core>=2.0.0,<3.0.0",
+    "setuptools>=61.0.0",
+    "wheel",
+    "torch>=2.0.1",
+    "torchvision>=0.15.2",
+    "numpy"
+]
+build-backend = "poetry.core.masonry.api"
