@@ -5,6 +5,7 @@ poetry.lock
 output
 instant_test_output
 inference_test_output
+output_data
 
 
 *.png
