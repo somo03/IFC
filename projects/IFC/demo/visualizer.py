@@ -1,6 +1,7 @@
 import torch
 import numpy as np
 import matplotlib.colors as mplc
+import cv2
 
 from detectron2.utils.visualizer import ColorMode, GenericMask, Visualizer, _create_text_labels, VisImage
 
@@ -101,15 +102,32 @@ class TrackVisualizer(Visualizer):
                 everything else blacked out.
         """
         preds = predictions.to(self.cpu_device)
-        
+
         if not preds.has("pred_masks"):
             raise ValueError("Predictions must contain masks for blackout visualization")
-            
-        if target_id >= len(preds.pred_masks):
-            raise ValueError(f"Target ID {target_id} is out of range. Only {len(masks)} instances present.")
 
-        target_mask_inverse = ~preds.pred_masks[target_id].numpy()
-        
+        if target_id >= len(preds.pred_masks):
+            raise ValueError(f"Target ID {target_id} is out of range. Only {len(preds.pred_masks)} instances present.")
+
+        # Get the original mask
+        target_mask = preds.pred_masks[target_id].numpy().astype(np.uint8)
+
+        # Dilate mask to extend by 15%
+        # First calculate appropriate kernel size based on mask size
+        mask_pixels = np.sum(target_mask)
+        mask_area = np.sqrt(mask_pixels)  # approximate width/height
+        dilation_pixels = int(0.15 * mask_area)  # 15% of the approximate size
+
+        # Ensure kernel size is odd and at least 3
+        kernel_size = max(3, 2 * (dilation_pixels // 2) + 1)
+        kernel = np.ones((kernel_size, kernel_size), np.uint8)
+
+        # Dilate the mask
+        dilated_mask = cv2.dilate(target_mask, kernel, iterations=1)
+
+        # Invert the dilated mask for blackout
+        target_mask_inverse = ~dilated_mask.astype(bool)
+
         self.draw_binary_mask(
             binary_mask=target_mask_inverse,
             color=(0,0,0),
