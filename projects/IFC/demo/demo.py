@@ -112,6 +112,8 @@ if __name__ == "__main__":
             print("    [->] going to call run_on_video")
 
            
+            # when black_out_all_except in not None, predictions and compressed_predictions contain masks originally detected by model
+            # and visualized_output contains visualization of masks with 15% dilation (see implementation of draw_instance_with_blackout() )
             predictions, visualized_output, compressed_predictions = demo.run_on_video(vid_frames, args.black_out_all_except)
             
             print(f"    [->] Mask sum instance 0: {predictions['pred_masks'][0].numpy().sum()}")
